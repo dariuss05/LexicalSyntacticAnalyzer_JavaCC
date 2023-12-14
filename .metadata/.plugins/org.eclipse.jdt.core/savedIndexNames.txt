@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+C:\Users\Darius\Desktop\Lexical_Syntactic_Analyzer\.metadata\.plugins\org.eclipse.jdt.core
+736867941.index
+1119995248.index
+1865797976.index

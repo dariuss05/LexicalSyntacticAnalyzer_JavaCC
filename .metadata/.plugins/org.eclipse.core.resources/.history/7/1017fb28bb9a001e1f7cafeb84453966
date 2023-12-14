@@ -1,0 +1,169 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+}
+
+PARSER_BEGIN(Grammar)
+package analyzer;
+
+public class Grammar
+{
+  public static void main(String args []) throws ParseException
+  {
+    Grammar parser = new Grammar(System.in);
+    while (true)
+    {
+      System.out.println("Reading from standard input...");
+      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");
+      try
+      {
+        switch (Grammar.one_line())
+        {
+          case 0 : 
+          System.out.println("OK.");
+          break;
+          case 1 : 
+          System.out.println("Goodbye.");
+          break;
+          default : 
+          break;
+        }
+      }
+      catch (Exception e)
+      {
+        System.out.println("NOK.");
+        System.out.println(e.getMessage());
+        Grammar.ReInit(System.in);
+      }
+      catch (Error e)
+      {
+        System.out.println("Oops.");
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(Grammar)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN :
+{
+  < CONSTANT : (< DIGIT >)+ ( "." (< DIGIT >)*)? ( ["e","E"] (["+","-"])? (< DIGIT >)+ )? ( ["f","F","d","D"] )? >
+| < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* ( ["e","E"] (["+","-"])? (["0"-"9"])+ )? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ ( ["e","E"] (["+","-"])? (["0"-"9"])+ )? (["f","F","d","D"])?
+      | (["0"-"9"])+ ( ["e","E"] (["+","-"])? (["0"-"9"])+ )? (["f","F","d","D"])?
+      | (["0"-"9"])+ ( ["e","E"] (["+","-"])? (["0"-"9"])+ )? ["f","F","d","D"]
+  >
+| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+| < #DIGIT : [ "0"-"9" ] >
+| < LESS_THAN_OR_EQUAL : "<=" >
+| < GREATER_THAN_OR_EQUAL : ">=" >
+| < EQUAL_EQUALS : "==" >
+| < EQUAL : "=" >
+| < NOT_EQUAL : "!=" >
+| < LESS_THAN : "<" >
+| < GREATER_THAN : ">" >
+| < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+| < LPAREN : "(" >
+| < RPAREN : ")" >
+}
+
+int one_line() :
+{}
+{
+  expression() ";"
+  {
+    return 0;
+  }
+| ";"
+  {
+    return 1;
+  }
+}
+
+void expression() :
+{}
+{
+	relational()
+}
+
+void relational() :
+{}
+{
+	sum()
+	(
+	  (
+	    <  LESS_THAN >
+	  | < GREATER_THAN >
+	  | < LESS_THAN_OR_EQUAL >
+	  | < GREATER_THAN_OR_EQUAL >
+	  | < EQUAL >
+	  | < NOT_EQUAL >
+	  )
+	sum()
+	)*
+}
+
+void sum() :
+{}
+{
+  term()
+  (
+    (
+      < PLUS >
+    | < MINUS >
+    )
+    term()
+  )*
+}
+
+void term() :
+{}
+{
+  unary()
+  (
+    (
+      < MULTIPLY >
+    | < DIVIDE >
+    )
+    unary()
+  )*
+}
+
+
+void factor() :
+{}
+{
+	unary()
+|  < LPAREN > expression() < RPAREN >
+}
+
+void unary() :
+{}
+{
+  < MINUS > element()
+| element()
+}
+
+void element() :
+{}
+{
+  < CONSTANT >
+| "(" sum() ")"
+}
